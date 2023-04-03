@@ -1,7 +1,3 @@
-//
-// Created by littl on 4/2/2023.
-//
-
 #include "AirportRecord.h"
 #include <string>
 #include <sstream>

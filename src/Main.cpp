@@ -1,10 +1,8 @@
-//
-// Created by littl on 4/2/2023.
-//
-
+#include <string>
 #include <iostream>
+#include "AirportRecord.h"
 #include "HashMap.h"
 
 int main() {
-
+    std::cout << "Hello, World!" << std::endl;
 }

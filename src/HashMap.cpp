@@ -1,7 +1,3 @@
-// Created by dalemorr on 3/29/2023.
-//
-// Demonstrates a HashTable and operations.
-
 #include "HashMap.h"
 #include <string>
 #include <sstream>
@@ -13,7 +9,7 @@
 typedef std::tuple<std::string, AirportRecord> Entry;
 
 HashMap::HashMap(int buckets) {
-    table = new Sequence<std::tuple<std::string, AirportRecord>>;
+    table = new Sequence<Entry>;
     this->buckets = buckets;
 }
 

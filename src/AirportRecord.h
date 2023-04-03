@@ -1,7 +1,3 @@
-//
-// Created by littl on 4/2/2023.
-//
-
 #ifndef AIRPORTRECORD_H
 #define AIRPORTRECORD_H
 
