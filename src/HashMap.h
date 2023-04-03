@@ -2,36 +2,38 @@
 // Created by littl on 4/2/2023.
 //
 
-#ifndef CSCI_C343_PROGRAMMING_ASSIGNMENT_4_HASHMAP_H
-#define CSCI_C343_PROGRAMMING_ASSIGNMENT_4_HASHMAP_H
+#ifndef HASHMAP_H
+#define HASHMAP_H
 
+#include <string>
 #include <iostream>
+#include <tuple>
+#include "Sequence.h"
+#include "AirportRecord.h"
 
-class HashEntry {
-private:
-    int key;
-    int value;
-public:
-    HashEntry(int key, int value);
-
-    int getKey();
-
-    int getValue();
-};
-
-const int TABLE_SIZE = 128;
+typedef std::tuple<std::string, AirportRecord> Entry;
 
 class HashMap {
 private:
-    HashEntry **table;
+    Sequence<Entry> *table;
+    const int PRIME = 41;
+    int buckets;
+    int size = 0;
+    int hash(std::string key);
 public:
-    HashMap();
-
-    int get(int key);
-
-    void put(int key, int value);
+    HashMap(int buckets);
 
     ~HashMap();
+
+    AirportRecord get(std::string key);
+
+    void put(std::string key, AirportRecord value);
+
+    void remove(std::string key);
+
+    int getSize();
+
+    std::string toString();
 };
 
-#endif //CSCI_C343_PROGRAMMING_ASSIGNMENT_4_HASHMAP_H
+#endif //HASHMAP_H

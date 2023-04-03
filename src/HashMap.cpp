@@ -2,57 +2,95 @@
 //
 // Demonstrates a HashTable and operations.
 
-#include <iostream>
 #include "HashMap.h"
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <tuple>
+#include "Sequence.h"
+#include "AirportRecord.h"
 
-HashEntry::HashEntry(int key, int value) {
-    this->key = key;
-    this->value = value;
-}
+typedef std::tuple<std::string, AirportRecord> Entry;
 
-int HashEntry::getKey() {
-    return key;
-}
-
-int HashEntry::getValue() {
-    return value;
-}
-
-HashMap::HashMap() {
-    table = new HashEntry*[TABLE_SIZE];
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        table[i] = NULL;
-    }
-}
-
-int HashMap::get(int key) {
-    int hash = (key % TABLE_SIZE);
-    while (table[hash] != NULL && table[hash]->getKey() != key) {
-        hash = (hash + 1) % TABLE_SIZE;
-    }
-    if (table[hash] == NULL) {
-        return -1;
-    } else {
-        return table[hash]->getValue();
-    }
-}
-
-void HashMap::put(int key, int value) {
-    int hash = (key % TABLE_SIZE);
-    while (table[hash] != NULL && table[hash]->getKey() != key) {
-        hash = (hash + 1) % TABLE_SIZE;
-    }
-    if (table[hash] != NULL) {
-        delete table[hash];
-    }
-    table[hash] = new HashEntry(key, value);
+HashMap::HashMap(int buckets) {
+    table = new Sequence<std::tuple<std::string, AirportRecord>>;
+    this->buckets = buckets;
 }
 
 HashMap::~HashMap() {
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        if (table[i] != NULL) {
-            delete table[i];
+    delete table;
+}
+
+int HashMap::hash(std::string key) {
+    int hashCode = 0;
+
+    int primeToPower = 1;
+    int i = 0;
+    while (key[i]) {
+        hashCode += primeToPower * key[i];
+        primeToPower *= PRIME;
+        i++;
+    }
+
+    hashCode %= buckets;
+    return hashCode;
+}
+
+AirportRecord HashMap::get(std::string key) {
+    int hashCode = hash(key);
+    Entry *thisEntry;
+
+    for (int i = 0, l = table[hashCode].length(); i < l; i++) {
+        table[hashCode].entry(*thisEntry, i);
+
+        if (std::get<0>(*thisEntry) == key) {
+            return std::get<1>(*thisEntry);
         }
     }
-    delete[] table;
+}
+
+void HashMap::put(std::string key, AirportRecord value) {
+    Entry *entry = new Entry(key, value);
+    table[hash(key)].add(*entry, table[hash(key)].length());
+    size++;
+}
+
+void HashMap::remove(std::string key) {
+    int hashCode = hash(key);
+    Entry *thisEntry;
+
+    for (int i = 0, l = table[hashCode].length(); i < l; i++) {
+        table[hashCode].entry(*thisEntry, i);
+
+        if (std::get<0>(*thisEntry) == key) {
+            table[hashCode].remove(*thisEntry, i);
+            size--;
+        }
+    }
+}
+
+int HashMap::getSize() {
+    return size;
+}
+
+std::string HashMap::toString() {
+    std::stringstream outputStream;
+    Entry *thisEntry;
+
+    for (int i = 0; i < buckets; i++) {
+        if (i > 0) {
+            outputStream << std::endl;
+        }
+
+        for (int j = 0; j < table[i].length(); j++) {
+            if (j > 0) {
+                outputStream << ", ";
+            }
+
+            table[i].entry(*thisEntry, j);
+            outputStream << "<" << std::get<0>(*thisEntry) << ", " << std::get<1>(*thisEntry).toString() << ">";
+        }
+    }
+
+    return outputStream.str();
 }
