@@ -15,6 +15,7 @@ private:
     const int PRIME = 41;
     int buckets;
     int size = 0;
+
     int hash(std::string key);
 public:
     HashMap(int buckets);
