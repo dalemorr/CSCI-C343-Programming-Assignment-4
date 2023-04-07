@@ -30,9 +30,9 @@ public:
 
     int getSize();
 
-    void readFromFile(const std::string& filename, HashMap& hm);
+    static void readFromFile(const std::string& filename, HashMap& hm);
 
-    void writeToFile(const std::string& filename, HashMap& hm);
+    static void writeToFile(const std::string& filename, HashMap& hm);
 
     std::string toString();
 };

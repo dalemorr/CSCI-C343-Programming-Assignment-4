@@ -37,7 +37,7 @@ AirportRecord HashMap::get(std::string key) {
     int hashCode = hash(key);
 
     for (auto & it : table[hashCode]) {
-        if (std::get<0>(it) == key) {
+        if (it.first == key) {
             return std::get<1>(it);
         }
     }
@@ -53,20 +53,68 @@ void HashMap::remove(std::string key) {
     int hashCode = hash(key);
 
     for (auto it = table[hashCode].begin(); it != table[hashCode].end(); it++) {
-        if (std::get<0>(*it) == key) {
+        if (it->first == key) {
             it = table[hashCode].erase(it);
             size--;
         }
     }
 }
 
-void readFromFile(const std::string& filename, HashMap& hm) {
+void HashMap::readFromFile(const std::string& filename, HashMap& hm) {
     std::ifstream file(filename);
-    std::string line;
+    int dataSize;
 
-    /*while (std::getline(file, line)) {
-        std::stringstream
-    }*/
+    std::string code;
+    std::string name;
+    std::string city;
+    std::string country;
+    int latDeg;
+    int latMin;
+    int latSec;
+    std::string latDir;
+    int lonDeg;
+    int lonMin;
+    int lonSec;
+    std::string lonDir;
+    int altitude;
+
+    if (!file) {
+        std::cout << "Unable to open file";
+        exit(1);
+    }
+
+    if (file.is_open()) {
+        file >> dataSize;
+        for (int i = 0; i < dataSize; i++) {
+            file >> code;
+            file >> name;
+            file >> city;
+            file >> country;
+            file >> latDeg;
+            file >> latMin;
+            file >> latSec;
+            file >> latDir;
+            file >> lonDeg;
+            file >> lonMin;
+            file >> lonSec;
+            file >> lonDir;
+            file >> altitude;
+
+            hm.put(code, AirportRecord(code, name, city, country, latDeg, latMin, latSec, latDir, lonDeg, lonMin, lonSec, lonDir, altitude));
+        }
+        file.close();
+    }
+}
+
+void HashMap::writeToFile(const std::string& filename, HashMap& hm) {
+    std::ofstream file(filename);
+
+    if (file.is_open()) {
+        file << hm.toString();
+        file.close();
+    } else {
+        std::cout << "Unable to open file" << std::endl;
+    }
 }
 
 int HashMap::getSize() {
@@ -86,7 +134,13 @@ std::string HashMap::toString() {
                 outputStream << ", ";
             }
 
-            outputStream << "<" << std::get<0>(*it) << ", " << std::get<1>(*it).toString() << ">";
+            std::cout << "This works too" << std::endl;
+            outputStream << "<" << it->first << ", ";
+
+            std::cout << "But does this work?" << std::endl;
+
+            outputStream << it->second.toString() << ">";
+            std::cout << "This additionally works" << std::endl;
         }
     }
 
