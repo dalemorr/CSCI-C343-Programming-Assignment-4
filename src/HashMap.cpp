@@ -2,14 +2,15 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <tuple>
-#include "Sequence.h"
+#include <fstream>
+#include <utility>
+#include <list>
 #include "AirportRecord.h"
 
-typedef std::tuple<std::string, AirportRecord> Entry;
+typedef std::pair<std::string, AirportRecord> Entry;
 
 HashMap::HashMap(int buckets) {
-    table = new Sequence<Entry>;
+    table = new std::list<Entry>;
     this->buckets = buckets;
 }
 
@@ -34,35 +35,38 @@ int HashMap::hash(std::string key) {
 
 AirportRecord HashMap::get(std::string key) {
     int hashCode = hash(key);
-    Entry *thisEntry;
 
-    for (int i = 0, l = table[hashCode].length(); i < l; i++) {
-        table[hashCode].entry(*thisEntry, i);
-
-        if (std::get<0>(*thisEntry) == key) {
-            return std::get<1>(*thisEntry);
+    for (auto & it : table[hashCode]) {
+        if (std::get<0>(it) == key) {
+            return std::get<1>(it);
         }
     }
 }
 
 void HashMap::put(std::string key, AirportRecord value) {
-    Entry *entry = new Entry(key, value);
-    table[hash(key)].add(*entry, table[hash(key)].length());
+    auto *entry = new Entry(key, value);
+    table[hash(key)].push_back(*entry);
     size++;
 }
 
 void HashMap::remove(std::string key) {
     int hashCode = hash(key);
-    Entry *thisEntry;
 
-    for (int i = 0, l = table[hashCode].length(); i < l; i++) {
-        table[hashCode].entry(*thisEntry, i);
-
-        if (std::get<0>(*thisEntry) == key) {
-            table[hashCode].remove(*thisEntry, i);
+    for (auto it = table[hashCode].begin(); it != table[hashCode].end(); it++) {
+        if (std::get<0>(*it) == key) {
+            it = table[hashCode].erase(it);
             size--;
         }
     }
+}
+
+void readFromFile(const std::string& filename, HashMap& hm) {
+    std::ifstream file(filename);
+    std::string line;
+
+    /*while (std::getline(file, line)) {
+        std::stringstream
+    }*/
 }
 
 int HashMap::getSize() {
@@ -71,20 +75,18 @@ int HashMap::getSize() {
 
 std::string HashMap::toString() {
     std::stringstream outputStream;
-    Entry *thisEntry;
 
     for (int i = 0; i < buckets; i++) {
         if (i > 0) {
             outputStream << std::endl;
         }
 
-        for (int j = 0; j < table[i].length(); j++) {
-            if (j > 0) {
+        for (auto it = table[i].begin(); it != table[i].end(); it++) {
+            if (it != table[i].begin()) {
                 outputStream << ", ";
             }
 
-            table[i].entry(*thisEntry, j);
-            outputStream << "<" << std::get<0>(*thisEntry) << ", " << std::get<1>(*thisEntry).toString() << ">";
+            outputStream << "<" << std::get<0>(*it) << ", " << std::get<1>(*it).toString() << ">";
         }
     }
 

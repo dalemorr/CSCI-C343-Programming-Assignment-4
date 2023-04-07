@@ -2,16 +2,16 @@
 #define HASHMAP_H
 
 #include <string>
+#include <utility>
+#include <list>
 #include <iostream>
-#include <tuple>
-#include "Sequence.h"
 #include "AirportRecord.h"
 
-typedef std::tuple<std::string, AirportRecord> Entry;
+typedef std::pair<std::string, AirportRecord> Entry;
 
 class HashMap {
 private:
-    Sequence<Entry> *table;
+    std::list<Entry> *table;
     const int PRIME = 41;
     int buckets;
     int size = 0;
@@ -30,7 +30,11 @@ public:
 
     int getSize();
 
+    void readFromFile(const std::string& filename, HashMap& hm);
+
+    void writeToFile(const std::string& filename, HashMap& hm);
+
     std::string toString();
 };
 
-#endif //HASHMAP_H
+#endif // HASHMAP_H
